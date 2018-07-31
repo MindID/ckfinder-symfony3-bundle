@@ -1,0 +1,26 @@
+services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        public: false       # Allows optimizing the container by removing unused services; this also means
+
+    CKSource\Bundle\CKFinderBundle\:
+        resource: '../../src/*'
+        exclude: '../../src/{DependencyInjection,Entity,Manager,Migrations,Tests,Kernel.php}'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    CKSource\Bundle\CKFinderBundle\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    ckfinder.connector.auth:
+        class: '%ckfinder.connector.auth.class%'
+        calls:
+            - [setContainer, ['@service_container']]
+
+    ckfinder.connector:
+        class: '%ckfinder.connector.class%'
+        arguments: ['%ckfinder.connector.config%']
+        calls:
+            - [offsetSet, ['authentication', '@ckfinder.connector.auth']]

@@ -63,9 +63,15 @@ class CKSourceCKFinderExtension extends Extension implements PrependExtensionInt
      */
     protected function registerFormThemes(ContainerBuilder $container)
     {
-        $templatingEngines = $container->getParameter('templating.engines');
+        if (in_array('TwigBundle', $container->getParameter('kernel.bundles'))) {
+            $container->setParameter(
+                'twig.paths',
+                array_merge(
+                    array('%kernel.project_dir%/vendor/mindid/ckfinder-symfony3-bundle/Resources/views'),
+                    $container->getParameter('twig.paths')
+                )
+            );
 
-        if (in_array('twig', $templatingEngines)) {
             $container->setParameter(
                 'twig.form.resources',
                 array_merge(
